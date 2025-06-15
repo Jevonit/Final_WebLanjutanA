@@ -20,6 +20,7 @@ import ApplicationForm from './components/Applications/ApplicationForm';
 import EmployerApplications from './components/Applications/EmployerApplications';
 import Header from './components/Layout/Header';
 import JobseekerProfile from './components/Profile/JobseekerProfile';
+import AdminUsers from './pages/AdminUsers';
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const App = () => {
               <Route path="/jobs/:id/edit" element={<JobEditForm />} />
               <Route path="/employer-applications" element={<EmployerApplications />} />
               <Route path="/jobseeker-profile/:userId" element={<JobseekerProfile />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
             </Routes>
           </main>
         </div>

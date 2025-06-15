@@ -240,6 +240,23 @@ export const updateUser = async (userId, updateData) => {
   }
 };
 
+export const createUser = async (userData) => {
+  try {
+    const response = await api.post('/users', userData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Failed to create user');
+  }
+};
+
+export const deleteUser = async (userId) => {
+  try {
+    await api.delete(`/users/${userId}`);
+  } catch (error) {
+    throw new Error(error.response?.data?.detail || 'Failed to delete user');
+  }
+};
+
 // Verify password without actually logging in
 export const verifyPassword = async (credentials) => {
   try {

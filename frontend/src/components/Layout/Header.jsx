@@ -35,7 +35,10 @@ const Header = () => {
                                 {user.role === 'Employer' ? (
                                     <li><Link to="/my-jobs">My Jobs</Link></li>
                                 ) : (
-                                    <li><Link to="/profile">Profile</Link></li>
+                                    user.role !== 'Admin' && <li><Link to="/profile">Profile</Link></li>
+                                )}
+                                {user.role === 'Admin' && (
+                                    <li><Link to="/admin/users">Admin Panel</Link></li>
                                 )}
                             </>
                         )}
@@ -58,7 +61,7 @@ const Header = () => {
                             {user.role === 'Employer' ? (
                                 <li><Link to="/my-jobs" className="btn btn-ghost">My Jobs</Link></li>
                             ) : (
-                                <li><Link to="/profile" className="btn btn-ghost">Profile</Link></li>
+                                user.role !== 'Admin' && <li><Link to="/profile" className="btn btn-ghost">Profile</Link></li>
                             )}
                         </>
                     )}
@@ -86,6 +89,9 @@ const Header = () => {
                             )}
                             {user.role === 'Job Seeker' && (
                                 <li><Link to="/my-applications">My Applications</Link></li>
+                            )}
+                            {user.role === 'Admin' && (
+                                <li><Link to="/admin/users">Admin Panel</Link></li>
                             )}
                             <li><button onClick={handleLogout}>Logout</button></li>
                         </ul>
