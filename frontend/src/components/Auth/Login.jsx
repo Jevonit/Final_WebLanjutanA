@@ -88,11 +88,6 @@ const Login = () => {
                                 required
                                 disabled={loading}
                             />
-                            <label className="label">
-                                <Link to="/forgot-password" className="label-text-alt link link-hover">
-                                    Forgot password?
-                                </Link>
-                            </label>
                         </div>
                         
                         <div className="form-control mt-6">

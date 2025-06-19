@@ -10,7 +10,6 @@ import Profile from './pages/Profile';
 import Account from './pages/Account';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-import Dashboard from './components/Dashboard/Dashboard';
 import JobPostList from './components/JobPosts/JobPostList';
 import JobPostDetail from './components/JobPosts/JobPostDetail';
 import JobCreateForm from './components/JobPosts/JobCreateForm';
@@ -42,7 +41,6 @@ const App = () => {
               <Route path="/account" element={<Account />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/job-posts" element={<JobPostList />} />
               <Route path="/applications" element={<ApplicationList />} />
               <Route path="/jobs/:id/edit" element={<JobEditForm />} />
