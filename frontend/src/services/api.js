@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL backend FastAPI Anda
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://finalweblanjutana-production.up.railway.app';
 
 // Create axios instance
 const api = axios.create({
