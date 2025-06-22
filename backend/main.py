@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.encoders import jsonable_encoder
 import os
 from dotenv import load_dotenv
 from database import db, check_connection
@@ -9,8 +8,6 @@ from app.routes.profiles import router as profiles_router
 from app.routes.job_posts import router as job_posts_router
 from app.routes.applications import router as applications_router
 from app.routes.auth import router as auth_router
-from app.utils.json_encoder import JSONEncoder
-from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -24,6 +21,7 @@ origins = [
     "http://localhost:5173",  # Vite default port
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
+    "https://bdcm-seeker.vercel.app"
 ]
 
 app.add_middleware(
