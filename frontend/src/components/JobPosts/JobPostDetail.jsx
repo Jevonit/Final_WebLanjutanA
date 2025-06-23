@@ -149,7 +149,7 @@ const JobPostDetail = () => {
                                     <span className="font-semibold">{jobPost.company}</span> • {jobPost.location}
                                 </div>
                                 <div className="text-xl font-bold text-primary">
-                                    ${jobPost.salary_min?.toLocaleString()} - ${jobPost.salary_max?.toLocaleString()}
+                                    Rp{jobPost.salary_min?.toLocaleString()} - Rp{jobPost.salary_max?.toLocaleString()}
                                 </div>
                                 <div className="text-sm text-base-content/60 mt-2">
                                     Posted by: {jobPost.user_name || jobPost.user_fullname || jobPost.user_email || 'Unknown'}

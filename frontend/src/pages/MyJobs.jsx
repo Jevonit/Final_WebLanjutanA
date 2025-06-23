@@ -85,9 +85,9 @@ const MyJobs = () => {
 
     const formatSalary = (min, max) => {
         if (!min && !max) return 'Not specified';
-        if (min && max) return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
-        if (min) return `From $${min.toLocaleString()}`;
-        if (max) return `Up to $${max.toLocaleString()}`;
+        if (min && max) return `Rp${min.toLocaleString()} - Rp${max.toLocaleString()}`;
+        if (min) return `From Rp${min.toLocaleString()}`;
+        if (max) return `Up to Rp${max.toLocaleString()}`;
     };
 
     if (!user || user.role !== 'Employer') {

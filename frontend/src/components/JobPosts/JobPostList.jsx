@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getJobPosts } from '../../services/api';
 
+const jobTypes = ["Full-time", "Part-time", "Freelance", "Other"];
+
 const JobPostList = () => {
     const navigate = useNavigate();
     const [jobPosts, setJobPosts] = useState([]);
@@ -13,20 +15,52 @@ const JobPostList = () => {
         total: 0,
         totalPages: 1
     });
+    const [filters, setFilters] = useState({
+        title: '',
+        job_type: '',
+        min_salary: '',
+        max_salary: ''
+    });
 
     useEffect(() => {
         fetchJobPosts();
     }, [pagination.page]);
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (pagination.page === 1) {
+            fetchJobPosts();
+        } else {
+            setPagination(prev => ({ ...prev, page: 1 }));
+        }
+    };
 
     const fetchJobPosts = async () => {
         try {
             setLoading(true);
             setError(null);
             
-            const response = await getJobPosts({
+            const params = {
                 skip: (pagination.page - 1) * pagination.limit,
-                limit: pagination.limit
+                limit: pagination.limit,
+                title: filters.title,
+                job_type: filters.job_type,
+                min_salary: filters.min_salary,
+                max_salary: filters.max_salary,
+            };
+
+            Object.keys(params).forEach(key => {
+                if (params[key] === '' || params[key] === null) {
+                    delete params[key];
+                }
             });
+
+            const response = await getJobPosts(params);
             
             // Backend returns data in 'data' field, not 'items' or 'jobs'
             const jobsArray = response?.data || response?.items || response?.jobs || [];
@@ -88,6 +122,48 @@ const JobPostList = () => {
                 </div>
             </div>
 
+            <div className="card bg-base-100 shadow-md p-4">
+                <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                    <div className="form-control lg:col-span-2">
+                        <label className="label"><span className="label-text">Job Title</span></label>
+                        <input 
+                            type="text" 
+                            name="title"
+                            value={filters.title}
+                            onChange={handleFilterChange}
+                            placeholder="Search by job title..."
+                            className="input input-bordered"
+                        />
+                    </div>
+                    <div className="form-control">
+                        <label className="label"><span className="label-text">Job Type</span></label>
+                        <select 
+                            name="job_type" 
+                            value={filters.job_type}
+                            onChange={handleFilterChange}
+                            className="select select-bordered"
+                        >
+                            <option value="">All</option>
+                            {jobTypes.map(type => <option key={type} value={type}>{type}</option>)}
+                        </select>
+                    </div>
+                    <div className="form-control">
+                        <label className="label"><span className="label-text">Min Salary</span></label>
+                        <input 
+                            type="number" 
+                            name="min_salary"
+                            value={filters.min_salary}
+                            onChange={handleFilterChange}
+                            placeholder="e.g. 5000000"
+                            className="input input-bordered"
+                        />
+                    </div>
+                    <div className="form-control">
+                        <button type="submit" className="btn btn-primary w-full">Search</button>
+                    </div>
+                </form>
+            </div>
+
             {jobPosts.length === 0 ? (
                 <div className="text-center py-12">
                     <div className="text-6xl mb-4">💼</div>
@@ -127,7 +203,7 @@ const JobPostList = () => {
                                 
                                 <div className="flex justify-between items-center mb-4">
                                     <div className="text-sm font-semibold text-primary">
-                                        ${post.salary_min?.toLocaleString()} - ${post.salary_max?.toLocaleString()}
+                                        Rp{post.salary_min?.toLocaleString()} - Rp{post.salary_max?.toLocaleString()}
                                     </div>
                                 </div>
                                 

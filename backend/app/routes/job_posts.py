@@ -63,6 +63,8 @@ async def read_job_posts(
     limit: int = Query(10, ge=1, le=100),
     job_type: Optional[str] = None,
     title: Optional[str] = None,
+    min_salary: Optional[int] = Query(None, ge=0),
+    max_salary: Optional[int] = Query(None, ge=0),
     db = Depends(get_db)
 ):
     """Get a paginated list of job posts with optional filtering."""
@@ -72,6 +74,17 @@ async def read_job_posts(
         filter_query["job_type"] = job_type
     if title:
         filter_query["title"] = {"$regex": title, "$options": "i"}
+    if min_salary is not None:
+        filter_query["salary_min"] = {"$gte": min_salary}
+    if max_salary is not None:
+        # If both min and max are provided, we can use $and or combine them
+        if "salary_min" in filter_query:
+            filter_query["$and"] = [
+                {"salary_min": filter_query.pop("salary_min")},
+                {"salary_max": {"$lte": max_salary}}
+            ]
+        else:
+            filter_query["salary_max"] = {"$lte": max_salary}
     
     # Get total count for pagination
     total = await db.job_posts.count_documents(filter_query)
