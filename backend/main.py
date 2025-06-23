@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.proxy_headers import ProxyHeadersMiddleware # <-- Import ditambahkan
 import os
 from dotenv import load_dotenv
 from database import db, check_connection
@@ -14,6 +15,10 @@ load_dotenv()
 
 # Create FastAPI app
 app = FastAPI(title=os.getenv("APP_NAME", "Final_WebLanjutanA"))
+
+# Add ProxyHeadersMiddleware to trust proxy headers from Railway
+# memperbaiki masalah redirect HTTP -> HTTPS
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # Configure CORS
 origins = [
@@ -79,4 +84,3 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(profiles_router)
 app.include_router(job_posts_router)
-app.include_router(applications_router)
