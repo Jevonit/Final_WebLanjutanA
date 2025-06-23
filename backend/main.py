@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.proxy_headers import ProxyHeadersMiddleware # <-- Import ditambahkan
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 import os
 from dotenv import load_dotenv
 from database import db, check_connection
@@ -16,11 +16,7 @@ load_dotenv()
 # Create FastAPI app
 app = FastAPI(title=os.getenv("APP_NAME", "Final_WebLanjutanA"))
 
-# Add ProxyHeadersMiddleware to trust proxy headers from Railway
-# memperbaiki masalah redirect HTTP -> HTTPS
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
-
-# Configure CORS
+# Configure CORS (Harus menjadi middleware pertama)
 origins = [
     "http://localhost:3000",  # React default port
     "http://localhost:5173",  # Vite default port
@@ -36,6 +32,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add ProxyHeadersMiddleware to trust proxy headers from Railway
+# Ini akan memperbaiki masalah redirect HTTP -> HTTPS
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # Dependency to check database connection
 async def get_db():
@@ -84,3 +84,4 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(profiles_router)
 app.include_router(job_posts_router)
+app.include_router(applications_router)
