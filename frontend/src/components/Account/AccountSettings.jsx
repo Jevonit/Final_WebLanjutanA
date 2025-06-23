@@ -423,21 +423,6 @@ const AccountSettings = () => {
                         )}
                     </div>
                 </div>
-
-                {/* Delete Account Card */}
-                <div className="card bg-base-100 shadow-xl">
-                    <div className="card-body">
-                        <h2 className="card-title text-xl text-error">Danger Zone</h2>
-                        <p className="text-base-content/70">
-                            Once you delete your account, there is no going back. Please be certain.
-                        </p>
-                        <div className="card-actions justify-end">
-                            <button className="btn btn-error">
-                                Delete Account
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     );
