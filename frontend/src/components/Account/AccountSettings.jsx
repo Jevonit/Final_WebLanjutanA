@@ -21,6 +21,23 @@ const AccountSettings = () => {
         password: false
     });
 
+    // Theme state for manual theme switching
+    const [theme, setTheme] = useState(() => {
+        // Try to get theme from localStorage, fallback to system
+        return localStorage.getItem('theme') || 'system';
+    });
+
+    // Apply theme to <html> tag when theme changes
+    useEffect(() => {
+        if (theme === 'system') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.removeItem('theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+    }, [theme]);
+
     useEffect(() => {
         if (user) {
             setFormData(prev => ({
@@ -199,6 +216,19 @@ const AccountSettings = () => {
             <div className="mb-6">
                 <h1 className="text-3xl font-bold">Account Settings</h1>
                 <p className="text-base-content/70">Manage your account information and password</p>
+                {/* Theme Switcher */}
+                <div className="mt-4 flex items-center gap-4">
+                    <span className="font-semibold">Theme:</span>
+                    <select
+                        className="select select-bordered"
+                        value={theme}
+                        onChange={e => setTheme(e.target.value)}
+                    >
+                        <option value="system">System Default</option>
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </div>
             </div>
 
             {message.text && (
