@@ -1,15 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Any
+from typing import Optional
 from datetime import datetime
-import json
-
-def convert_object_id(obj: Any) -> Any:
-    """Convert any object recursively for JSON serialization."""
-    if isinstance(obj, dict):
-        return {key: convert_object_id(value) for key, value in obj.items()}
-    elif isinstance(obj, list):
-        return [convert_object_id(item) for item in obj]
-    return obj
+from bson import ObjectId
 
 # Base model with simple integer id field
 class MongoBaseModel(BaseModel):
@@ -21,14 +13,6 @@ class MongoBaseModel(BaseModel):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
-    
-    def dict(self, **kwargs):
-        """Override dict method to convert ObjectIds to strings."""
-        data = super().dict(**kwargs)
-        return convert_object_id(data)
-        json_encoders = {
-            ObjectId: str,
-            datetime: lambda dt: dt.isoformat(),
+            datetime: lambda v: v.isoformat(),
+            ObjectId: str  # Menangani konversi ObjectId ke string
         }
