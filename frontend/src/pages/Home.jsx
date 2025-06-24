@@ -144,7 +144,7 @@ const Home = () => {
                                     
                                     <div className="flex justify-between items-center">
                                         <div className="text-sm text-base-content/70">
-                                            ${job.salary_min?.toLocaleString()} - ${job.salary_max?.toLocaleString()}
+                                            Rp{job.salary_min?.toLocaleString()} - Rp{job.salary_max?.toLocaleString()}
                                         </div>
                                         <div className="card-actions">
                                             <button 
