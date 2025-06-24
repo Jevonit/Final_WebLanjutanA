@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { updateUser, verifyPassword } from '../../services/api';
 
+// ThemeContext for global theme state
+const ThemeContext = createContext();
+export const useTheme = () => useContext(ThemeContext);
+
 const AccountSettings = () => {
     const { user, updateAuthUser, logout } = useAuth();
     const navigate = useNavigate();
+    const { theme, setTheme } = useTheme();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
     const [formData, setFormData] = useState({
@@ -20,23 +25,6 @@ const AccountSettings = () => {
         profile: false,
         password: false
     });
-
-    // Theme state for manual theme switching
-    const [theme, setTheme] = useState(() => {
-        // Try to get theme from localStorage, fallback to system
-        return localStorage.getItem('theme') || 'system';
-    });
-
-    // Apply theme to <html> tag when theme changes
-    useEffect(() => {
-        if (theme === 'system') {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.removeItem('theme');
-        } else {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-        }
-    }, [theme]);
 
     useEffect(() => {
         if (user) {
@@ -455,6 +443,27 @@ const AccountSettings = () => {
                 </div>
             </div>
         </div>
+    );
+};
+
+// ThemeProvider for global theme management
+export const ThemeProvider = ({ children }) => {
+    const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'system');
+
+    useEffect(() => {
+        if (theme === 'system') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.removeItem('theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+    }, [theme]);
+
+    return (
+        <ThemeContext.Provider value={{ theme, setTheme }}>
+            {children}
+        </ThemeContext.Provider>
     );
 };
 

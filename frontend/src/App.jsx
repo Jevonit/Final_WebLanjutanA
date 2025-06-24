@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './components/Account/AccountSettings';
 import Home from './pages/Home';
 import Jobs from './pages/Jobs';
 import MyApplications from './pages/MyApplications';
@@ -25,31 +26,33 @@ const App = () => {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/jobs" element={<Jobs />} />
-              <Route path="/jobs/create" element={<JobCreateForm />} />
-              <Route path="/jobs/:id" element={<JobPostDetail />} />
-              <Route path="/jobs/:id/apply" element={<ApplicationForm />} />
-              <Route path="/jobs/:id/applications" element={<JobApplications />} />
-              <Route path="/my-applications" element={<MyApplications />} />
-              <Route path="/my-jobs" element={<MyJobs />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/job-posts" element={<JobPostList />} />
-              <Route path="/applications" element={<ApplicationList />} />
-              <Route path="/jobs/:id/edit" element={<JobEditForm />} />
-              <Route path="/employer-applications" element={<EmployerApplications />} />
-              <Route path="/jobseeker-profile/:userId" element={<JobseekerProfile />} />
-              <Route path="/admin/users" element={<AdminUsers />} />
-            </Routes>
-          </main>
-        </div>
+        <ThemeProvider>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/jobs/create" element={<JobCreateForm />} />
+                <Route path="/jobs/:id" element={<JobPostDetail />} />
+                <Route path="/jobs/:id/apply" element={<ApplicationForm />} />
+                <Route path="/jobs/:id/applications" element={<JobApplications />} />
+                <Route path="/my-applications" element={<MyApplications />} />
+                <Route path="/my-jobs" element={<MyJobs />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/job-posts" element={<JobPostList />} />
+                <Route path="/applications" element={<ApplicationList />} />
+                <Route path="/jobs/:id/edit" element={<JobEditForm />} />
+                <Route path="/employer-applications" element={<EmployerApplications />} />
+                <Route path="/jobseeker-profile/:userId" element={<JobseekerProfile />} />
+                <Route path="/admin/users" element={<AdminUsers />} />
+              </Routes>
+            </main>
+          </div>
+        </ThemeProvider>
       </AuthProvider>
     </Router>
   );
