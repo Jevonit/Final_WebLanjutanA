@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { getJobPosts, getApplicationsByJob, updateApplication, getUser } from '../../services/api';
+import { getApplicationsByJob, updateApplication, getUser } from '../../services/api';
+import jobPostService from '../../services/jobPosts';
 import { useAuth } from '../../context/AuthContext';
 
 const EmployerApplications = () => {
@@ -21,7 +22,7 @@ const EmployerApplications = () => {
 
         try {
             // 1. Fetch all job posts for the current employer
-            const jobsResponse = await getJobPosts({ employer_id: user._id });
+            const jobsResponse = await jobPostService.getByUser(user._id);
             const employerJobs = jobsResponse.items || jobsResponse.data || [];
             setJobs(employerJobs);
 

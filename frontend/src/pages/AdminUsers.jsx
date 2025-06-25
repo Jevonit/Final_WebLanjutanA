@@ -45,7 +45,7 @@ const AdminUsers = () => {
         try {
             const data = await jobPostService.getAll(currentPage, 5); // 5 jobs per page for admin view
             setJobs(data.items || []);
-            setTotalPages(Math.ceil(data.total / data.limit));
+            setTotalPages(data.total_pages || 1);
         } catch (err) {
             setJobError('Failed to fetch job posts.');
             setJobs([]);
@@ -193,49 +193,49 @@ const AdminUsers = () => {
                 {deleteMessage && <div className="alert alert-success mb-4">{deleteMessage}</div>}
                 <div className="overflow-x-auto">
                     {jobLoading ? <div>Loading jobs...</div> : (
-                        <table className="table w-full table-zebra">
-                            <thead>
-                                <tr>
-                                    <th>Job Title</th>
-                                    <th>Employer</th>
-                                    <th>Location</th>
-                                    <th>Salary</th>
-                                    <th>Posted On</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {jobs.map((job) => {
-                                    const jobId = job.id !== undefined ? job.id : job._id;
-                                    return (
-                                        <tr key={jobId}>
-                                            <td>
-                                                <div className="font-bold">{job.title}</div>
-                                                <div className="text-sm opacity-50">{job.company}</div>
-                                            </td>
-                                            <td>{job.user_name || 'N/A'}</td>
-                                            <td>{job.location}</td>
-                                            <td>{formatSalary(job.salary_min, job.salary_max)}</td>
-                                            <td>{formatDate(job.created_at)}</td>
-                                            <td className="flex space-x-1">
-                                                <Link to={`/jobs/${jobId}`} className="btn btn-ghost btn-xs" title="View">View</Link>
-                                                <Link to={`/jobs/${jobId}/edit`} className="btn btn-ghost btn-xs" title="Edit">Edit</Link>
-                                                <button onClick={() => handleDeleteJob(jobId)} className="btn btn-ghost btn-xs text-error" title="Delete">Delete</button>
-                                            </td>
+                        <>
+                            <table className="table w-full table-zebra">
+                                <thead>
+                                    <tr>
+                                        <th>Job Title</th>
+                                        <th>Employer</th>
+                                        <th>Salary</th>
+                                        <th>Created At</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {jobs && jobs.length > 0 ? (
+                                        jobs.map(job => (
+                                            <tr key={job.id || job._id}>
+                                                <td>
+                                                    <Link to={`/jobs/${job.id || job._id}`} className="link link-hover">{job.title}</Link>
+                                                </td>
+                                                <td>{job.employer_name || (job.user && job.user.name) || 'N/A'}</td>
+                                                <td>{formatSalary(job.salary_min, job.salary_max)}</td>
+                                                <td>{formatDate(job.created_at)}</td>
+                                                <td className="space-x-2">
+                                                    <Link to={`/jobs/edit/${job.id || job._id}`} className="btn btn-sm btn-info">Edit</Link>
+                                                    <button onClick={() => handleDeleteJob(job.id || job._id)} className="btn btn-sm btn-error">Delete</button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="5" className="text-center">No job posts found.</td>
                                         </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                                    )}
+                                </tbody>
+                            </table>
+                            {!jobLoading && totalPages > 1 && (
+                                <div className="btn-group mt-4">
+                                    <button onClick={() => handlePageChange(page - 1)} disabled={page === 1} className="btn">«</button>
+                                    <button className="btn">Page {page} of {totalPages}</button>
+                                    <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages} className="btn">»</button>
+                                </div>
+                            )}
+                        </>
                     )}
-                </div>
-                {/* Pagination */}
-                <div className="flex justify-center mt-6">
-                    <div className="btn-group">
-                        <button onClick={() => handlePageChange(page - 1)} disabled={page <= 1} className="btn">«</button>
-                        <button className="btn">Page {page}</button>
-                        <button onClick={() => handlePageChange(page + 1)} disabled={page >= totalPages} className="btn">»</button>
-                    </div>
                 </div>
             </div>
         </div>
