@@ -16,7 +16,7 @@ class ApplicationBase(BaseModel):
     status: ApplicationStatus = ApplicationStatus.PENDING
     cv_data: str  # Base64 encoded CV data
     cv_filename: str  # Original filename
-    cv_content_type: str = "application/pdf"  # MIME type fixed to application/pdf
+    cv_content_type: str = "application/pdf"
 
 class ApplicationCreate(ApplicationBase):
     pass

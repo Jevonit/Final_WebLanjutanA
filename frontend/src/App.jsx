@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import Jobs from './pages/Jobs';
 import MyApplications from './pages/MyApplications';
 import MyJobs from './pages/MyJobs';
-import JobApplications from './pages/JobApplications';
 import Profile from './pages/Profile';
 import Account from './pages/Account';
 import Login from './components/Auth/Login';
@@ -21,6 +20,7 @@ import EmployerApplications from './components/Applications/EmployerApplications
 import Header from './components/Layout/Header';
 import JobseekerProfile from './components/Profile/JobseekerProfile';
 import AdminUsers from './pages/AdminUsers';
+import NotFound from './pages/NotFound';
 
 const App = () => {
   return (
@@ -36,7 +36,6 @@ const App = () => {
                 <Route path="/jobs/create" element={<JobCreateForm />} />
                 <Route path="/jobs/:id" element={<JobPostDetail />} />
                 <Route path="/jobs/:id/apply" element={<ApplicationForm />} />
-                <Route path="/jobs/:id/applications" element={<JobApplications />} />
                 <Route path="/my-applications" element={<MyApplications />} />
                 <Route path="/my-jobs" element={<MyJobs />} />
                 <Route path="/profile" element={<Profile />} />
@@ -49,6 +48,7 @@ const App = () => {
                 <Route path="/employer-applications" element={<EmployerApplications />} />
                 <Route path="/jobseeker-profile/:userId" element={<JobseekerProfile />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
           </div>
