@@ -44,8 +44,8 @@ const AdminUsers = () => {
         setJobError(null);
         try {
             const data = await jobPostService.getAll(currentPage, 5); // 5 jobs per page for admin view
-            setJobs(data.items || []);
-            setTotalPages(data.total_pages || 1);
+            setJobs(data.data || []);
+            setTotalPages(data.pages || 1);
         } catch (err) {
             setJobError('Failed to fetch job posts.');
             setJobs([]);
