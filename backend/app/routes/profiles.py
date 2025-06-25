@@ -6,6 +6,8 @@ from app.models.profile import Profile, ProfileCreate, ProfileUpdate
 from app.models.base import convert_object_id
 from app.utils.pagination import PaginatedResponse
 from app.utils.sequences import get_next_sequence_value
+from app.models.user import User
+from app.utils.auth import get_current_user
 from database import db, get_db
 
 router = APIRouter(
@@ -98,6 +100,7 @@ async def read_profile_by_user(user_id: int, db = Depends(get_db)):
 async def update_profile(
     profile_id: int,
     profile: ProfileUpdate,
+    current_user: User = Depends(get_current_user),
     db = Depends(get_db)
 ):
     """Update a profile."""
@@ -107,6 +110,11 @@ async def update_profile(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with ID {profile_id} not found"
+        )
+    if current_user.role != "Admin" and existing_profile["user_id"] != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to update this profile"
         )
     
     # Update profile
@@ -126,6 +134,7 @@ async def update_profile(
 async def update_profile_by_user(
     user_id: int,
     profile: ProfileUpdate,
+    current_user: User = Depends(get_current_user),
     db = Depends(get_db)
 ):
     """Update profile by user ID."""
@@ -135,6 +144,11 @@ async def update_profile_by_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile not found for user {user_id}"
+        )
+    if current_user.role != "Admin" and user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to update this profile"
         )
     
     # Update profile
@@ -151,7 +165,7 @@ async def update_profile_by_user(
     return Profile(**convert_object_id(updated_profile))
 
 @router.delete("/{profile_id}")
-async def delete_profile(profile_id: int, db = Depends(get_db)):
+async def delete_profile(profile_id: int, current_user: User = Depends(get_current_user), db = Depends(get_db)):
     """Delete a profile."""
     # Check if profile exists
     profile = await db.profiles.find_one({"_id": profile_id})
@@ -160,6 +174,11 @@ async def delete_profile(profile_id: int, db = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with ID {profile_id} not found"
         )
+    if current_user.role != "Admin" and profile["user_id"] != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to delete this profile"
+        )
     
     # Delete the profile
     await db.profiles.delete_one({"_id": profile_id})
@@ -167,7 +186,7 @@ async def delete_profile(profile_id: int, db = Depends(get_db)):
     return {"message": f"Profile {profile_id} deleted successfully"}
 
 @router.delete("/user/{user_id}")
-async def delete_profile_by_user(user_id: int, db = Depends(get_db)):
+async def delete_profile_by_user(user_id: int, current_user: User = Depends(get_current_user), db = Depends(get_db)):
     """Delete profile by user ID."""
     # Check if profile exists
     profile = await db.profiles.find_one({"user_id": user_id})
@@ -175,6 +194,11 @@ async def delete_profile_by_user(user_id: int, db = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile not found for user {user_id}"
+        )
+    if current_user.role != "Admin" and user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to delete this profile"
         )
     
     # Delete the profile

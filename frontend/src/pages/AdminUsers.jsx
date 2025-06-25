@@ -198,7 +198,6 @@ const AdminUsers = () => {
                                 <thead>
                                     <tr>
                                         <th>Job Title</th>
-                                        <th>Employer</th>
                                         <th>Salary</th>
                                         <th>Created At</th>
                                         <th>Actions</th>
@@ -211,18 +210,17 @@ const AdminUsers = () => {
                                                 <td>
                                                     <Link to={`/jobs/${job.id || job._id}`} className="link link-hover">{job.title}</Link>
                                                 </td>
-                                                <td>{job.employer_name || (job.user && job.user.name) || 'N/A'}</td>
                                                 <td>{formatSalary(job.salary_min, job.salary_max)}</td>
                                                 <td>{formatDate(job.created_at)}</td>
                                                 <td className="space-x-2">
-                                                    <Link to={`/jobs/edit/${job.id || job._id}`} className="btn btn-sm btn-info">Edit</Link>
+                                                    <Link to={`/jobs/${job.id || job._id}/edit`} className="btn btn-sm btn-info">Edit</Link>
                                                     <button onClick={() => handleDeleteJob(job.id || job._id)} className="btn btn-sm btn-error">Delete</button>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="5" className="text-center">No job posts found.</td>
+                                            <td colSpan="4" className="text-center">No job posts found.</td>
                                         </tr>
                                     )}
                                 </tbody>

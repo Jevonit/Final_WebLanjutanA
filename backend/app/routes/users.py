@@ -8,6 +8,7 @@ from app.utils.pagination import PaginatedResponse
 from app.models.base import convert_object_id
 from app.utils.sequences import get_next_sequence_value
 from database import db, get_db
+from app.utils.auth import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -16,8 +17,11 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=User, status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserCreate, db = Depends(get_db)):
+async def create_user(user: UserCreate, current_user: User = Depends(get_current_user), db = Depends(get_db)):
     """Create a new user."""
+    if current_user.role != "Admin":
+        raise HTTPException(status_code=403, detail="Only admin can create users")
+    
     # Check if email already exists
     if await db.users.find_one({"email": user.email}):
         raise HTTPException(
@@ -85,8 +89,11 @@ async def read_user(user_id: int, db = Depends(get_db)):
     return User(**user)
 
 @router.put("/{user_id}", response_model=User)
-async def update_user(user_id: int, user: UserUpdate, db = Depends(get_db)):
+async def update_user(user_id: int, user: UserUpdate, current_user: User = Depends(get_current_user), db = Depends(get_db)):
     """Update a user."""
+    if current_user.role != "Admin" and user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this user")
+    
     # Check if user exists
     existing_user = await db.users.find_one({"_id": user_id})
     if not existing_user:
@@ -122,8 +129,11 @@ async def update_user(user_id: int, user: UserUpdate, db = Depends(get_db)):
     return User(**updated_user)
 
 @router.delete("/{user_id}")
-async def delete_user(user_id: int, db = Depends(get_db)):
+async def delete_user(user_id: int, current_user: User = Depends(get_current_user), db = Depends(get_db)):
     """Delete a user."""
+    if current_user.role != "Admin" and user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this user")
+    
     # Check if user exists
     user = await db.users.find_one({"_id": user_id})
     if not user:

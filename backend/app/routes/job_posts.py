@@ -142,6 +142,7 @@ async def read_job_posts_by_user(
 async def update_job_post(
     job_post_id: int,
     job_post: JobPostUpdate,
+    current_user: User = Depends(get_current_user),
     db = Depends(get_db)
 ):
     """Update a job post."""
@@ -152,7 +153,9 @@ async def update_job_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Job post with ID {job_post_id} not found"
         )
-    
+    # Authorization: Only Admin or owner (Employer) can edit
+    if current_user.role != "Admin" and existing_job_post["user_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to edit this job post")
     # Update job post
     update_data = job_post.dict(exclude_unset=True, by_alias=True)
     if update_data:
@@ -161,13 +164,12 @@ async def update_job_post(
             {"_id": job_post_id},
             {"$set": update_data}
         )
-      
     # Return updated job post
     updated_job_post = await db.job_posts.find_one({"_id": job_post_id})
     return JobPost(**convert_object_id(updated_job_post))
 
 @router.delete("/{job_post_id}")
-async def delete_job_post(job_post_id: int, db = Depends(get_db)):
+async def delete_job_post(job_post_id: int, current_user: User = Depends(get_current_user), db = Depends(get_db)):
     """Delete a job post."""
     # Check if job post exists
     job_post = await db.job_posts.find_one({"_id": job_post_id})
@@ -176,11 +178,11 @@ async def delete_job_post(job_post_id: int, db = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Job post with ID {job_post_id} not found"
         )
-    
+    # Authorization: Only Admin or owner (Employer) can delete
+    if current_user.role != "Admin" and job_post["user_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this job post")
     # Delete the job post
     await db.job_posts.delete_one({"_id": job_post_id})
-    
     # Delete all applications for this job post
     await db.applications.delete_many({"job_post_id": job_post_id})
-    
     return {"message": f"Job post {job_post_id} deleted successfully"}

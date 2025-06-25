@@ -7,6 +7,8 @@ from app.models.base import convert_object_id
 from app.utils.pagination import PaginatedResponse
 from app.utils.sequences import get_next_sequence_value
 from database import db, get_db
+from app.models.user import User
+from app.utils.auth import get_current_user
 
 router = APIRouter(
     prefix="/applications",
@@ -15,8 +17,12 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=Application, status_code=status.HTTP_201_CREATED)
-async def create_application(application: ApplicationCreate, db = Depends(get_db)):
+async def create_application(application: ApplicationCreate, current_user: User = Depends(get_current_user), db = Depends(get_db)):
     """Create a new job application."""
+    if current_user.role != "Job Seeker":
+        raise HTTPException(status_code=403, detail="Only job seekers can apply for jobs")
+    if application.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="You can only apply as yourself")
     # Check if user exists
     user = await db.users.find_one({"_id": application.user_id})
     if not user:
@@ -150,6 +156,7 @@ async def read_applications_by_job_post(
 async def update_application(
     application_id: int,
     application: ApplicationUpdate,
+    current_user: User = Depends(get_current_user),
     db = Depends(get_db)
 ):
     """Update an application."""
@@ -160,6 +167,18 @@ async def update_application(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Application with ID {application_id} not found"
         )
+    
+    # Job Seeker hanya boleh update application miliknya sendiri
+    # Employer hanya boleh update status application untuk jobpost miliknya
+    # Admin boleh update semua
+    if current_user.role == "Job Seeker" and existing_application["user_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this application")
+    if current_user.role == "Employer":
+        job_post = await db.job_posts.find_one({"_id": existing_application["job_post_id"]})
+        if not job_post or job_post["user_id"] != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized to update this application")
+    if current_user.role not in ["Admin", "Employer", "Job Seeker"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
     
     # Update application
     update_data = application.dict(exclude_unset=True, by_alias=True)
@@ -175,7 +194,7 @@ async def update_application(
     return Application(**convert_object_id(updated_application))
 
 @router.delete("/{application_id}")
-async def delete_application(application_id: int, db = Depends(get_db)):
+async def delete_application(application_id: int, current_user: User = Depends(get_current_user), db = Depends(get_db)):
     """Delete an application."""
     # Check if application exists
     application = await db.applications.find_one({"_id": application_id})
@@ -184,6 +203,8 @@ async def delete_application(application_id: int, db = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Application with ID {application_id} not found"
         )
+    if current_user.role != "Admin" and application["user_id"] != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this application")
     
     # Delete the application
     await db.applications.delete_one({"_id": application_id})
