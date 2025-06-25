@@ -1,6 +1,6 @@
 import api from './api';
 
-const jobPostService = {
+export const jobPostService = {
   // Get all job posts
   getAll: async (page = 1, limit = 10) => {
     const response = await api.get(`/job-posts/?page=${page}&limit=${limit}`);
