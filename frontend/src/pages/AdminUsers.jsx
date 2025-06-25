@@ -213,7 +213,6 @@ const AdminUsers = () => {
                                                 <td>{formatSalary(job.salary_min, job.salary_max)}</td>
                                                 <td>{formatDate(job.created_at)}</td>
                                                 <td className="space-x-2">
-                                                    <Link to={`/jobs/${job.id || job._id}/edit`} className="btn btn-sm btn-info">Edit</Link>
                                                     <button onClick={() => handleDeleteJob(job.id || job._id)} className="btn btn-sm btn-error">Delete</button>
                                                 </td>
                                             </tr>
