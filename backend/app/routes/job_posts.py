@@ -154,7 +154,7 @@ async def update_job_post(
             detail=f"Job post with ID {job_post_id} not found"
         )
     # Authorization: Only Admin or owner (Employer) can edit
-    if str(current_user.role).lower() != "admin" and existing_job_post["user_id"] != current_user.id:
+    if current_user.role != "Admin" and existing_job_post["user_id"] != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to edit this job post")
     # Update job post
     update_data = job_post.dict(exclude_unset=True, by_alias=True)

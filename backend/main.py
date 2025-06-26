@@ -34,7 +34,7 @@ app.add_middleware(
 )
 
 # Add ProxyHeadersMiddleware to trust proxy headers from Railway
-# Ini akan memperbaiki masalah redirect HTTP -> HTTPS
+# Memperbaiki masalah redirect HTTP -> HTTPS
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # Dependency to check database connection
