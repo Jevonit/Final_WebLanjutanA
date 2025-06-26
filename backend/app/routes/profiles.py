@@ -17,8 +17,19 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=Profile, status_code=status.HTTP_201_CREATED)
-async def create_profile(profile: ProfileCreate, db = Depends(get_db)):
+async def create_profile(
+    profile: ProfileCreate,
+    current_user: User = Depends(get_current_user),
+    db = Depends(get_db)
+):
     """Create a new profile."""
+    # Only Admin or Job Seeker can create profile
+    if current_user.role not in ["Admin", "Job Seeker"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Admin or Job Seeker can create a profile"
+        )
+    
     # Check if user exists
     user = await db.users.find_one({"_id": profile.user_id})
     if not user:
